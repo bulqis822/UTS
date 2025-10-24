@@ -9,7 +9,7 @@ import os
 st.set_page_config(page_title="Deteksi Karakter Tom & Jerry", layout="wide")
 
 # ------------------- HEADER -------------------
-st.markdown("<h1 style='text-align:center; color:#FF7043;'>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center; color:#FF7043;'> Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center;'>Sistem deteksi otomatis karakter berdasarkan model YOLO yang kamu latih sendiri.</p>", unsafe_allow_html=True)
 
 # ------------------- SIDEBAR NAVIGATION -------------------
@@ -75,19 +75,6 @@ elif menu == "ℹ️ Tentang":
     3. Tunggu sebentar hingga model selesai memproses.
     4. Hasil deteksi akan muncul di samping, lengkap dengan nama karakter.
 
-    ### ⚙️ Teknologi yang Digunakan:
-    - **Streamlit** → untuk tampilan web interaktif.  
-    - **Ultralytics YOLOv8** → untuk model deteksi objek.  
-    - **Pillow (PIL)** → untuk membaca dan memproses gambar.
-
-    ### 📁 Struktur Folder:
-    ```
-    📂 proyek/
-     ┣ 📜 dashboard.py
-     ┣ 📂 model/
-     ┃ ┗ 📜 Bulqis_Laporan_4.pt
-     ┣ 📜 requirements.txt
-    ```
 
     ### 👩‍💻 Pembuat:
     Dibuat oleh **Bulqis** — mahasiswa Statistika, Universitas Syiah Kuala.  
