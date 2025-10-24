@@ -3,7 +3,8 @@ from ultralytics import YOLO
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
+import cv2
 
 # ==========================
 # Load Models
@@ -20,55 +21,67 @@ yolo_model, classifier = load_models()
 # ==========================
 # UI Layout
 # ==========================
-st.title("🧠 Image Classification & Object Detection Dashboard")
+st.title("🧠 Tom & Jerry Character Detection & Classification")
 
 st.sidebar.header("🔍 Pilih Mode")
-menu = st.sidebar.radio("Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
+menu = st.sidebar.radio("Mode:", ["Deteksi Karakter (YOLO)", "Klasifikasi Gambar"])
 
 uploaded_file = st.file_uploader("📁 Unggah Gambar", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     img = Image.open(uploaded_file).convert("RGB")
 
-    # Dua kolom: kiri gambar asli, kanan hasil
     col1, col2 = st.columns(2, gap="large")
 
     with col1:
         st.image(img, caption="📸 Gambar Asli", width="stretch")
 
     with col2:
-        if menu == "Deteksi Objek (YOLO)":
-            with st.spinner("🔍 Mendeteksi objek otomatis..."):
+        if menu == "Deteksi Karakter (YOLO)":
+            with st.spinner("🔍 Mendeteksi karakter (otomatis lebih sensitif)..."):
                 img_array = np.array(img)
 
-                # 🔧 Pengaturan otomatis (lebih peka, tapi tetap akurat)
-                # - conf rendah supaya peka terhadap objek kecil
-                # - iou menengah agar overlap tetap stabil
-                # - augment=True untuk meningkatkan hasil prediksi (seperti perbaikan pencahayaan)
-                results = yolo_model.predict(
+                # ==== Inference utama ====
+                results_main = yolo_model.predict(
                     source=img_array,
-                    conf=0.15,
-                    iou=0.55,
+                    conf=0.1,  # lebih peka terhadap pose kecil/samping
+                    iou=0.6,   # longgar supaya bounding box lebih toleran
+                    imgsz=640, # multi-scale friendly
                     augment=True,
                     verbose=False
                 )
 
-                result_img = results[0].plot()
-                labels = results[0].names
+                # ==== Inference tambahan (flip horizontal) ====
+                flipped_img = ImageOps.mirror(img)
+                flipped_array = np.array(flipped_img)
+                results_flip = yolo_model.predict(
+                    source=flipped_array,
+                    conf=0.1,
+                    iou=0.6,
+                    imgsz=640,
+                    augment=True,
+                    verbose=False
+                )
 
-                st.image(result_img, caption="✅ Hasil Deteksi Otomatis", width="stretch")
+                # Gabungkan hasil (main + flip)
+                result_img = results_main[0].plot()
+                if len(results_flip[0].boxes) > 0:
+                    flipped_plot = results_flip[0].plot()
+                    result_img = np.maximum(result_img, flipped_plot)  # gabung hasil dua arah
 
-                st.subheader("📋 Objek Terdeteksi:")
-                detected = []
-                for box in results[0].boxes:
-                    cls_id = int(box.cls[0])
-                    conf = float(box.conf[0])
-                    detected.append(f"- {labels[cls_id]} ({conf:.2f})")
+                labels = results_main[0].names
+                st.image(result_img, caption="✅ Hasil Deteksi (lebih peka)", width="stretch")
 
-                if detected:
-                    st.write("\n".join(detected))
+                # Tampilkan daftar objek
+                all_boxes = list(results_main[0].boxes) + list(results_flip[0].boxes)
+                if all_boxes:
+                    st.subheader("📋 Karakter Terdeteksi:")
+                    for box in all_boxes:
+                        cls_id = int(box.cls[0])
+                        conf = float(box.conf[0])
+                        st.write(f"- {labels[cls_id]} ({conf:.2f})")
                 else:
-                    st.warning("Tidak ada objek yang terdeteksi 😕")
+                    st.warning("Tidak ada karakter yang terdeteksi 😕")
 
         elif menu == "Klasifikasi Gambar":
             with st.spinner("🧠 Mengklasifikasikan gambar..."):
@@ -80,8 +93,7 @@ if uploaded_file is not None:
                 class_index = np.argmax(prediction)
                 confidence = np.max(prediction)
 
-                # 🔖 Ganti sesuai label model kamu
-                labels = ["Kelas 1", "Kelas 2", "Kelas 3"]
+                labels = ["Tom", "Jerry", "Lainnya"]
                 predicted_label = (
                     labels[class_index]
                     if class_index < len(labels)
