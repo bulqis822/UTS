@@ -74,8 +74,9 @@ elif menu == "ℹ️ Tentang":
     2. Unggah gambar yang berisi karakter Tom atau Jerry.
     3. Tunggu sebentar hingga model selesai memproses.
     4. Hasil deteksi akan muncul di samping, lengkap dengan nama karakter.
-
+    """)
     st.markdown("---")
+    st.markdown("""
     ### 👩‍💻 Pembuat:
     Dibuat oleh **Bulqis** — mahasiswa Statistika, Universitas Syiah Kuala.  
     """)
