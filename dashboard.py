@@ -31,22 +31,34 @@ h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 10px;
+    animation: glowHeader 2s infinite alternate;
+}
+@keyframes glowHeader {
+    0% { text-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00; }
+    50% { text-shadow: 0 0 15px #00ff4c, 0 0 25px #ffff00; }
+    100% { text-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00; }
 }
 
-/* Tombol Streamlit */
-.stButton>button {
+/* Sidebar neon radio */
+div[role="radiogroup"] > label {
+    display: block;
     background: linear-gradient(90deg, #00ff4c, #ffff00);
     color: #001f00;
-    font-weight: 600;
-    border: none;
+    font-weight: 700;
+    padding: 12px 15px;
+    margin-bottom: 12px;
     border-radius: 12px;
-    padding: 0.7em 2em;
-    margin: 5px;
+    cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 0 10px #00ff4c80, 0 0 20px #ffff4080;
 }
-.stButton>button:hover {
-    box-shadow: 0 0 25px #00ff4c80, 0 0 50px #ffff4080;
-    transform: translateY(-2px);
+div[role="radiogroup"] > label:hover {
+    box-shadow: 0 0 25px #00ff4c, 0 0 50px #ffff00;
+    transform: translateX(5px);
+}
+div[role="radiogroup"] > label[data-baseweb="radio"] input:checked + span {
+    box-shadow: 0 0 35px #00ff4c, 0 0 70px #ffff00;
+    animation: neonPulse 1.5s infinite alternate;
 }
 
 /* Card hasil deteksi */
@@ -57,10 +69,16 @@ h1 {
     padding: 20px;
     margin-top: 20px;
     transition: all 0.4s ease-in-out;
+    animation: neonCard 1.8s infinite alternate;
 }
 .result-card:hover {
     box-shadow: 0 0 25px #00ff4c80, 0 0 50px #ffff4060;
     transform: translateY(-5px);
+}
+@keyframes neonCard {
+    0% { box-shadow: 0 0 10px #00ff4c60, 0 0 20px #ffff0060; }
+    50% { box-shadow: 0 0 25px #00ff4c80, 0 0 50px #ffff4080; }
+    100% { box-shadow: 0 0 10px #00ff4c60, 0 0 20px #ffff0060; }
 }
 
 /* Info box */
@@ -71,14 +89,12 @@ h1 {
     color: #bdfebd;
     text-align: center;
     margin-top: 10px;
+    animation: neonPulse 1.5s infinite alternate;
 }
-
-/* Neon text */
-.neon-name {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #00ff4c;
-    text-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00, 0 0 20px #00ff4c;
+@keyframes neonPulse {
+    0% { box-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00; }
+    50% { box-shadow: 0 0 15px #00ff4c, 0 0 25px #ffff00; }
+    100% { box-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00; }
 }
 
 /* Subtext */
@@ -86,18 +102,6 @@ h1 {
     font-size: 1rem;
     color: #bdfebd;
     margin-bottom: 20px;
-}
-
-/* Neon title animation */
-.neon-title {
-    animation: glow 1.8s infinite alternate;
-    font-weight: 800;
-    font-size: 2.2rem;
-}
-@keyframes glow {
-    0% { text-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00; }
-    50% { text-shadow: 0 0 15px #00ff4c, 0 0 25px #ffff00; }
-    100% { text-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00; }
 }
 
 /* Footer */
@@ -110,26 +114,6 @@ footer {
     font-size: 0.9rem;
     color: #bdfebd;
     box-shadow: 0 0 20px #00ff4c40;
-}
-
-/* Sidebar radio neon */
-div[role="radiogroup"] > label {
-    display: block;
-    background: linear-gradient(90deg, #00ff4c, #ffff00);
-    color: #001f00;
-    font-weight: 700;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-div[role="radiogroup"] > label:hover {
-    box-shadow: 0 0 15px #00ff4c, 0 0 25px #ffff00;
-    transform: translateX(5px);
-}
-div[role="radiogroup"] > label[data-baseweb="radio"] input:checked + span {
-    box-shadow: 0 0 25px #00ff4c, 0 0 50px #ffff00;
 }
 
 /* Responsive */
