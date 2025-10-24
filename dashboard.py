@@ -15,10 +15,23 @@ st.set_page_config(
 # ------------------- CUSTOM CSS -------------------
 st.markdown("""
 <style>
-/* Body background gradient */
-body {
-    background: linear-gradient(to right, #001f3f, #ff851b);
-    color: #ffffff;
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #001f3f;
+    color: #ff851b;
+    font-family: 'Verdana', sans-serif;
+}
+
+/* Sidebar radio buttons */
+.css-1avcm0n {
+    color: #ff851b;
+    font-weight: bold;
+}
+
+/* Main background gradient */
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(to bottom right, #87CEFA, #FFD580); /* biru muda ke orange muda */
+    color: #001f3f;
 }
 
 /* Header */
@@ -28,32 +41,9 @@ h1 {
     text-align: center;
 }
 
-/* Sidebar */
-[data-testid="stSidebar"] {
-    background-color: #001f3f;
-    color: #ff851b;
-    font-family: 'Verdana', sans-serif;
-}
-
-/* Radio buttons in sidebar */
-.css-1avcm0n {
-    color: #ff851b;
-    font-weight: bold;
-}
-
 /* Subheaders */
 h2, h3, h4 {
-    color: #ff851b;
-}
-
-/* Info boxes */
-.stAlert {
-    border-left: 5px solid #ff851b;
-}
-
-/* Success box */
-.stSuccess {
-    border-left: 5px solid #00BFFF;
+    color: #001f3f;
 }
 
 /* Buttons */
@@ -70,6 +60,15 @@ h2, h3, h4 {
 .stButton>button:hover {
     background-color: #ffaa33;
     color: #001f3f;
+}
+
+/* Cards / box effect for result images */
+.result-card {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -101,7 +100,9 @@ if menu == "🧠 Deteksi":
         col1, col2 = st.columns(2)
 
         with col1:
+            st.markdown('<div class="result-card">', unsafe_allow_html=True)
             st.image(image, caption="Gambar Asli", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
         with col2:
             with st.spinner("Model sedang memproses gambar..."):
@@ -109,7 +110,10 @@ if menu == "🧠 Deteksi":
                     model = load_model()
                     results = model.predict(image, conf=0.5, imgsz=640, verbose=False)
                     result_image = results[0].plot()  # hasil deteksi ke array numpy
+
+                    st.markdown('<div class="result-card">', unsafe_allow_html=True)
                     st.image(result_image, caption="Hasil Deteksi", use_container_width=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
                     # tampilkan label hasil deteksi
                     detected_labels = set()
