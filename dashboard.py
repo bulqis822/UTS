@@ -1,81 +1,70 @@
 import streamlit as st
 from ultralytics import YOLO
 from PIL import Image
-import numpy as np
 import cv2
+import numpy as np
+import tempfile
+import os
 
-# ==========================
-# CONFIG STREAMLIT
-# ==========================
-st.set_page_config(page_title="Deteksi Karakter Tom & Jerry 🐭🐱", layout="wide")
+st.set_page_config(page_title="Deteksi Karakter Tom & Jerry", layout="wide")
 
-st.title("🎬 Deteksi Karakter Tom & Jerry")
-st.write("Aplikasi ini menggunakan model YOLOv8 untuk mendeteksi karakter **Tom** dan **Jerry** pada gambar secara otomatis.")
+st.title("🎬 Deteksi Karakter Tom dan Jerry")
+st.write("Unggah gambar untuk mendeteksi karakter berdasarkan model YOLO kamu.")
 
-# ==========================
-# LOAD MODEL YOLO
-# ==========================
+# Load model (pastikan path sesuai)
+MODEL_PATH = "model/Bulqis_Laporan_4.pt"
+
 @st.cache_resource
-def load_yolo_model():
+def load_model():
     try:
-        model = YOLO("model/Bulqis_Laporan_4.pt")  # pastikan path sesuai
-        st.sidebar.success("✅ Model YOLO berhasil dimuat!")
+        model = YOLO(MODEL_PATH)
         return model
     except Exception as e:
-        st.sidebar.error(f"❌ Gagal memuat model YOLO: {e}")
+        st.error(f"Gagal memuat model YOLO: {e}")
         return None
 
-model = load_yolo_model()
+model = load_model()
 
-if model is None:
-    st.stop()
-
-# Ambil label dari model (harus sesuai training)
-LABELS = model.names
-
-# ==========================
-# UPLOAD GAMBAR
-# ==========================
-uploaded_file = st.file_uploader("Unggah gambar yang ingin dideteksi:", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("Upload Gambar", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    image_uploaded = Image.open(uploaded_file).convert("RGB")
-
-    # Konversi ke numpy array untuk pemrosesan YOLO
-    image_np = np.array(image_uploaded)
-
-    # Jalankan deteksi YOLO
-    with st.spinner("🔍 Sedang mendeteksi objek..."):
-        results = model.predict(image_np, conf=0.45, iou=0.5, verbose=False)  
-        # conf=0.45 agar lebih peka, tapi tetap akurat
-
-    result_img = results[0].plot()  # hasil deteksi (dalam format OpenCV BGR)
-
-    # Konversi ke RGB agar bisa ditampilkan Streamlit
-    result_img_rgb = cv2.cvtColor(result_img, cv2.COLOR_BGR2RGB)
-
-    # ==========================
-    # TAMPILKAN HASIL (SAMPING-SAMPING)
-    # ==========================
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image(image_uploaded, caption="📤 Gambar yang Diupload", width=400)
+        st.subheader("📸 Gambar Asli")
+        image = Image.open(uploaded_file)
+        st.image(image, use_column_width=True)
 
     with col2:
-        st.image(result_img_rgb, caption="✅ Hasil Deteksi YOLO", width=400)
+        if model is not None:
+            st.subheader("🔍 Hasil Deteksi")
 
-    # ==========================
-    # TAMPILKAN INFO DETEKSI
-    # ==========================
-    st.subheader("📊 Detil Deteksi:")
-    if len(results[0].boxes) > 0:
-        for box in results[0].boxes:
-            cls_id = int(box.cls[0])
-            label = LABELS.get(cls_id, "Unknown")
-            conf = float(box.conf[0])
-            st.write(f"- **{label}** (Confidence: {conf:.2f})")
-    else:
-        st.warning("⚠️ Tidak ada karakter yang terdeteksi di gambar ini.")
+            # Simpan file sementara
+            with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+                tmp_file.write(uploaded_file.getvalue())
+                tmp_path = tmp_file.name
+
+            # Deteksi otomatis
+            results = model.predict(tmp_path, conf=0.35, iou=0.5)  # agak peka tapi tetap akurat
+            result_image = results[0].plot()  # render deteksi ke array numpy
+
+            # Konversi untuk Streamlit
+            st.image(result_image, caption="Hasil Deteksi", use_column_width=True)
+
+            # Tampilkan label deteksi
+            detected_labels = set()
+            for box in results[0].boxes:
+                cls = int(box.cls)
+                label = model.names[cls]
+                detected_labels.add(label)
+            
+            if detected_labels:
+                st.success(f"Karakter terdeteksi: {', '.join(detected_labels)}")
+            else:
+                st.warning("Tidak ada karakter yang terdeteksi di gambar ini.")
+            
+            os.remove(tmp_path)
+        else:
+            st.error("Model tidak berhasil dimuat. Periksa kembali file .pt kamu.")
 else:
-    st.info("📁 Silakan unggah gambar terlebih dahulu untuk mendeteksi karakter.")
+    st.info("Silakan unggah gambar terlebih dahulu untuk memulai deteksi.")
