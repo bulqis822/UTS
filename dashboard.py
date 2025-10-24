@@ -6,11 +6,77 @@ import tempfile
 import os
 
 # ------------------- CONFIG -------------------
-st.set_page_config(page_title="Deteksi Karakter Tom & Jerry", layout="wide")
+st.set_page_config(
+    page_title="Deteksi Karakter Tom & Jerry",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# ------------------- CUSTOM CSS -------------------
+st.markdown("""
+<style>
+/* Body background gradient */
+body {
+    background: linear-gradient(to right, #001f3f, #ff851b);
+    color: #ffffff;
+}
+
+/* Header */
+h1 {
+    color: #ff851b;
+    font-family: 'Arial Black', sans-serif;
+    text-align: center;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #001f3f;
+    color: #ff851b;
+    font-family: 'Verdana', sans-serif;
+}
+
+/* Radio buttons in sidebar */
+.css-1avcm0n {
+    color: #ff851b;
+    font-weight: bold;
+}
+
+/* Subheaders */
+h2, h3, h4 {
+    color: #ff851b;
+}
+
+/* Info boxes */
+.stAlert {
+    border-left: 5px solid #ff851b;
+}
+
+/* Success box */
+.stSuccess {
+    border-left: 5px solid #00BFFF;
+}
+
+/* Buttons */
+.stButton>button {
+    background-color: #ff851b;
+    color: white;
+    border-radius: 8px;
+    height: 3em;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.stButton>button:hover {
+    background-color: #ffaa33;
+    color: #001f3f;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # ------------------- HEADER -------------------
-st.markdown("<h1 style='text-align:center; color:#FF7043;'> Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center;'>Sistem deteksi otomatis karakter berdasarkan model YOLO yang kamu latih sendiri.</p>", unsafe_allow_html=True)
+st.markdown("<h1>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; font-size:18px;'>Sistem deteksi otomatis karakter berdasarkan model YOLO yang kamu latih sendiri.</p>", unsafe_allow_html=True)
 
 # ------------------- SIDEBAR NAVIGATION -------------------
 menu = st.sidebar.radio("Navigasi", ["🧠 Deteksi", "ℹ️ Tentang"])
@@ -65,7 +131,6 @@ if menu == "🧠 Deteksi":
 # ------------------- TENTANG -------------------
 elif menu == "ℹ️ Tentang":
     st.subheader("ℹ️ Tentang Aplikasi Ini")
-
     st.markdown("""
     Aplikasi ini dibuat untuk **mendeteksi karakter Tom dan Jerry** secara otomatis menggunakan model **YOLOv8**.
     
@@ -80,4 +145,3 @@ elif menu == "ℹ️ Tentang":
     ### 👩‍💻 Pembuat:
     Dibuat oleh **Bulqis** — mahasiswa Statistika, Universitas Syiah Kuala.  
     """)
-    
