@@ -14,64 +14,8 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-/* Sidebar */
-[data-testid="stSidebar"] {
-    background-color: #001f3f;  /* biru dongker */
-    color: #ff851b;             /* orange */
-    font-family: 'Verdana', sans-serif;
-}
-
-/* Sidebar radio buttons */
-.css-1avcm0n {
-    color: #ff851b;
-    font-weight: bold;
-}
-
-/* Main background gradient */
-[data-testid="stAppViewContainer"] {
-    background: linear-gradient(to bottom right, #87CEFA, #FFD580); /* biru muda ke orange muda */
-    color: #001f3f;
-}
-
-/* Header */
-h1 {
-    color: #ff851b;
-    font-family: 'Arial Black', sans-serif;
-    text-align: center;
-}
-
-/* Subheaders */
-h2, h3, h4 {
-    color: #001f3f;
-}
-
-/* Buttons */
-.stButton>button {
-    background-color: #ff851b;
-    color: white;
-    border-radius: 8px;
-    height: 3em;
-    width: 100%;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.stButton>button:hover {
-    background-color: #ffaa33;
-    color: #001f3f;
-}
-
-/* Cards / box effect for result images */
-.result-card {
-    background-color: rgba(255, 255, 255, 0.7);
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
-}
-
-/* File uploader */
-div.stFileUpload > div > div > div {
+/* Uploader container */
+div.stFileUpload>div>div {
     background-color: white !important;  /* background putih */
     color: #001f3f !important;           /* teks gelap */
     border-radius: 8px;
@@ -79,20 +23,26 @@ div.stFileUpload > div > div > div {
     font-weight: bold;
 }
 
-/* Uploader button */
+/* Tombol "Browse files" */
 div.stFileUpload button {
-    background-color: #ff851b !important; /* oranye terang */
-    color: white !important;
+    background-color: #ff851b !important; /* oranye */
+    color: white !important;              /* teks putih */
     border-radius: 8px;
     font-weight: bold;
 }
 
 div.stFileUpload button:hover {
-    background-color: #ffaa33 !important;
+    background-color: #ffaa33 !important; /* oranye muda saat hover */
     color: #001f3f !important;
+}
+
+/* Teks placeholder "Drag and drop file here" */
+div.stFileUpload div[data-testid="stFileUploadDropzone"] {
+    color: #001f3f !important;  /* teks gelap */
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 # ------------------- HEADER -------------------
