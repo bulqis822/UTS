@@ -14,7 +14,7 @@ st.markdown("""
 <style>
 /* Body & aplikasi */
 body, .stApp {
-    background: radial-gradient(circle at top left, #0a1a0a, #0d2610, #112f12);  /* gelap hijau untuk kontras neon */
+    background: radial-gradient(circle at top left, #0a1a0a, #0d2610, #112f12);
     color: #e0ffe0;
     font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
@@ -27,13 +27,13 @@ h1, h2, h3 {
 }
 h1 {
     font-size: 3rem;
-    background: linear-gradient(90deg, #00ff4c, #ffff00);  /* neon hijau ke kuning */
+    background: linear-gradient(90deg, #00ff4c, #ffff00);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 10px;
 }
 
-/* Tombol */
+/* Tombol Streamlit */
 .stButton>button {
     background: linear-gradient(90deg, #00ff4c, #ffff00);
     color: #001f00;
@@ -112,6 +112,26 @@ footer {
     box-shadow: 0 0 20px #00ff4c40;
 }
 
+/* Sidebar radio neon */
+div[role="radiogroup"] > label {
+    display: block;
+    background: linear-gradient(90deg, #00ff4c, #ffff00);
+    color: #001f00;
+    font-weight: 700;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+div[role="radiogroup"] > label:hover {
+    box-shadow: 0 0 15px #00ff4c, 0 0 25px #ffff00;
+    transform: translateX(5px);
+}
+div[role="radiogroup"] > label[data-baseweb="radio"] input:checked + span {
+    box-shadow: 0 0 25px #00ff4c, 0 0 50px #ffff00;
+}
+
 /* Responsive */
 @media only screen and (max-width: 1024px) {
     .stColumns { flex-direction: column !important; }
@@ -120,52 +140,17 @@ footer {
 </style>
 """, unsafe_allow_html=True)
 
-
 # ------------------- HEADER -------------------
 st.markdown("<h1 style='text-align:center;'>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center; font-size:18px;'>Sistem deteksi otomatis karakter berbasis YOLOv8.</p>", unsafe_allow_html=True)
 
-# ------------------- SIDEBAR NEON BUTTON -------------------
-if 'page' not in st.session_state:
-    st.session_state.page = "Tentang"
-
-def set_page(page_name):
-    st.session_state.page = page_name
-
-# Tombol sidebar interaktif
-st.sidebar.markdown(f"""
-<style>
-.sidebar-button {{
-    display: block;
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-align: left;
-    color: #001f00;
-    background: linear-gradient(90deg, #00ff4c, #ffff00);
-    border: none;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}}
-.sidebar-button:hover {{
-    box-shadow: 0 0 15px #00ff4c, 0 0 25px #ffff00;
-    transform: translateX(5px);
-}}
-.sidebar-button.active {{
-    box-shadow: 0 0 25px #00ff4c, 0 0 50px #ffff00;
-}}
-</style>
-""", unsafe_allow_html=True)
-
-# Tombol “Tentang” & “Deteksi”
-st.sidebar.button("ℹ️ Tentang", key="btn_tentang", on_click=set_page, args=("Tentang",))
-st.sidebar.button("🧠 Deteksi", key="btn_deteksi", on_click=set_page, args=("Deteksi",))
-
-menu = st.session_state.page
-
+# ------------------- SIDEBAR NAVIGATION -------------------
+menu = st.sidebar.radio(
+    "Navigasi",
+    ["ℹ️ Tentang", "🧠 Deteksi"],
+    index=0,
+    key="sidebar_menu"
+)
 
 # ------------------- LOAD MODEL -------------------
 @st.cache_resource
@@ -200,7 +185,7 @@ elif menu == "🧠 Deteksi":
 
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert("RGB")
-        image = image.resize((640, 480))  # resize agar lebih ringan
+        image = image.resize((640, 480))
 
         col1, col2 = st.columns(2)
 
@@ -212,7 +197,7 @@ elif menu == "🧠 Deteksi":
                 try:
                     model = load_model()
                     results = model.predict(image, conf=0.5, imgsz=640, verbose=False)
-                    result_image = results[0].plot()  # hasil deteksi ke array numpy
+                    result_image = results[0].plot()
 
                     st.image(result_image, caption="Hasil Deteksi", use_container_width=True)
 
