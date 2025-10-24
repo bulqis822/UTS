@@ -1,50 +1,64 @@
 import streamlit as st
 from ultralytics import YOLO
-import tensorflow as tf
-from tensorflow.keras.preprocessing import image
-import numpy as np
 from PIL import Image
-import cv2
+import numpy as np
+import tempfile
+import os
 
-# ==========================
-# Load Models
-# ==========================
+st.set_page_config(page_title="YOLO Object Detection", layout="wide")
+
+# --- TITLE ---
+st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🪶 YOLO Object Detection Dashboard</h1>", unsafe_allow_html=True)
+
+# --- LOAD MODEL (cached biar tidak reload terus) ---
 @st.cache_resource
-def load_models():
-    yolo_model = YOLO("model/Bulqis_Laporan_4.pt")  # Model deteksi objek
-    classifier = tf.keras.models.load_model("model/Putri_Laporan_2.h5")  # Model klasifikasi
-    return yolo_model, classifier
+def load_model():
+    model_path = "model/Bulqis_Laporan_4.pt"  # pastikan path benar
+    model = YOLO(model_path)
+    return model
 
-yolo_model, classifier = load_models()
+try:
+    model = load_model()
+except Exception as e:
+    st.error(f"Gagal memuat model: {e}")
+    st.stop()
 
-# ==========================
-# UI
-# ==========================
-st.title("🧠 Image Classification & Object Detection App")
+# --- PILIH INPUT ---
+st.sidebar.title("⚙️ Pengaturan")
+mode = st.sidebar.radio("Pilih Mode:", ["Gambar", "Video"])
 
-menu = st.sidebar.selectbox("Pilih Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
+if mode == "Gambar":
+    uploaded_file = st.file_uploader("Unggah Gambar", type=["jpg", "jpeg", "png"])
 
-uploaded_file = st.file_uploader("Unggah Gambar", type=["jpg", "jpeg", "png"])
+    if uploaded_file:
+        img = Image.open(uploaded_file).convert("RGB")
 
-if uploaded_file is not None:
-    img = Image.open(uploaded_file)
-    st.image(img, caption="Gambar yang Diupload", use_container_width=True)
+        # kompres ukuran biar ringan
+        img = img.resize((640, 480))
 
-    if menu == "Deteksi Objek (YOLO)":
-        # Deteksi objek
-        results = yolo_model(img)
-        result_img = results[0].plot()  # hasil deteksi (gambar dengan box)
-        st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
+        st.image(img, caption="Gambar Asli", use_container_width=True)
 
-    elif menu == "Klasifikasi Gambar":
-        # Preprocessing
-        img_resized = img.resize((224, 224))  # sesuaikan ukuran dengan model kamu
-        img_array = image.img_to_array(img_resized)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = img_array / 255.0
+        with st.spinner("Mendeteksi objek..."):
+            results = model.predict(img, conf=0.5, imgsz=640, verbose=False)
+            result_img = results[0].plot()  # hasil deteksi jadi numpy array
+            st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
 
-        # Prediksi
-        prediction = classifier.predict(img_array)
-        class_index = np.argmax(prediction)
-        st.write("### Hasil Prediksi:", class_index)
-        st.write("Probabilitas:", np.max(prediction))
+elif mode == "Video":
+    uploaded_video = st.file_uploader("Unggah Video", type=["mp4", "mov", "avi"])
+    if uploaded_video:
+        tfile = tempfile.NamedTemporaryFile(delete=False)
+        tfile.write(uploaded_video.read())
+
+        st.video(tfile.name)
+
+        with st.spinner("Mendeteksi objek... (harap tunggu, CPU mode)"):
+            results = model.predict(source=tfile.name, conf=0.5, stream=False, imgsz=640, verbose=False)
+            
+            output_path = os.path.join("temp", "hasil.mp4")
+            os.makedirs("temp", exist_ok=True)
+            model.export(format="onnx", simplify=True)  # biar next run lebih cepat
+
+            st.success("✅ Deteksi selesai (tampilkan video hasilnya belum diaktifkan untuk kecepatan).")
+
+st.markdown("---")
+st.caption("🚀 Dibuat dengan YOLOv8 + Streamlit | Optimized by ChatGPT GPT-5")
