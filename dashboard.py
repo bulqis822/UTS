@@ -125,8 +125,47 @@ footer {
 st.markdown("<h1 style='text-align:center;'>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center; font-size:18px;'>Sistem deteksi otomatis karakter berbasis YOLOv8.</p>", unsafe_allow_html=True)
 
-# ------------------- SIDEBAR NAVIGATION -------------------
-menu = st.sidebar.radio("", ["ℹ️ Tentang", "🧠 Deteksi"])
+# ------------------- SIDEBAR NEON BUTTON -------------------
+if 'page' not in st.session_state:
+    st.session_state.page = "Tentang"
+
+def set_page(page_name):
+    st.session_state.page = page_name
+
+# Tombol sidebar interaktif
+st.sidebar.markdown(f"""
+<style>
+.sidebar-button {{
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: left;
+    color: #001f00;
+    background: linear-gradient(90deg, #00ff4c, #ffff00);
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}}
+.sidebar-button:hover {{
+    box-shadow: 0 0 15px #00ff4c, 0 0 25px #ffff00;
+    transform: translateX(5px);
+}}
+.sidebar-button.active {{
+    box-shadow: 0 0 25px #00ff4c, 0 0 50px #ffff00;
+}}
+</style>
+""", unsafe_allow_html=True)
+
+# Tombol “Tentang” & “Deteksi”
+st.sidebar.button("ℹ️ Tentang", key="btn_tentang", on_click=set_page, args=("Tentang",))
+st.sidebar.button("🧠 Deteksi", key="btn_deteksi", on_click=set_page, args=("Deteksi",))
+
+menu = st.session_state.page
+
 
 # ------------------- LOAD MODEL -------------------
 @st.cache_resource
