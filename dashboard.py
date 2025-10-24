@@ -6,18 +6,17 @@ import numpy as np
 import tempfile
 import os
 
-st.set_page_config(page_title="Deteksi Karakter Tom & Jerry", layout="wide")
+st.set_page_config(page_title="Bulqis Object Detection", page_icon="🤖", layout="wide")
 
-st.title("🎬 Deteksi Karakter Tom dan Jerry")
-st.write("Unggah gambar untuk mendeteksi karakter berdasarkan model YOLO kamu.")
+st.title("🎬 Tom and Jerry Object Detection")
+st.markdown("Upload gambar atau video untuk mendeteksi karakter menggunakan model YOLO (.pt).")
 
-# Load model (pastikan path sesuai)
-MODEL_PATH = "model/Bulqis_Laporan_4.pt"
-
+# === Load YOLO model ===
 @st.cache_resource
 def load_model():
     try:
-        model = YOLO(MODEL_PATH)
+        model_path = os.path.join("model", "Bulqis_Laporan_4.pt")
+        model = YOLO(model_path)
         return model
     except Exception as e:
         st.error(f"Gagal memuat model YOLO: {e}")
@@ -25,46 +24,51 @@ def load_model():
 
 model = load_model()
 
-uploaded_file = st.file_uploader("Upload Gambar", type=["jpg", "jpeg", "png"])
+# === Pilihan Mode ===
+mode = st.radio("Pilih Mode Deteksi:", ["Gambar", "Video"], horizontal=True)
 
-if uploaded_file is not None:
-    col1, col2 = st.columns(2)
+if model:
+    if mode == "Gambar":
+        uploaded_file = st.file_uploader("Upload Gambar", type=["jpg", "jpeg", "png"])
+        if uploaded_file:
+            image = Image.open(uploaded_file).convert("RGB")
+            img_array = np.array(image)
+            results = model.predict(img_array, conf=0.4, iou=0.5)
+            
+            annotated_frame = results[0].plot()
+            st.image(annotated_frame, caption="Hasil Deteksi", use_container_width=True)
 
-    with col1:
-        st.subheader("📸 Gambar Asli")
-        image = Image.open(uploaded_file)
-        st.image(image, use_column_width=True)
-
-    with col2:
-        if model is not None:
-            st.subheader("🔍 Hasil Deteksi")
-
-            # Simpan file sementara
-            with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-                tmp_file.write(uploaded_file.getvalue())
-                tmp_path = tmp_file.name
-
-            # Deteksi otomatis
-            results = model.predict(tmp_path, conf=0.35, iou=0.5)  # agak peka tapi tetap akurat
-            result_image = results[0].plot()  # render deteksi ke array numpy
-
-            # Konversi untuk Streamlit
-            st.image(result_image, caption="Hasil Deteksi", use_column_width=True)
-
-            # Tampilkan label deteksi
-            detected_labels = set()
+            # Tampilkan label dan confidence
+            st.subheader("Deteksi Terdeteksi:")
             for box in results[0].boxes:
-                cls = int(box.cls)
-                label = model.names[cls]
-                detected_labels.add(label)
+                cls_id = int(box.cls)
+                conf = float(box.conf)
+                label = model.names[cls_id]
+                st.write(f"- **{label}** ({conf:.2f})")
+
+    elif mode == "Video":
+        uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
+        if uploaded_video:
+            tfile = tempfile.NamedTemporaryFile(delete=False)
+            tfile.write(uploaded_video.read())
+
+            st.video(tfile.name)
+            st.info("⏳ Tunggu sebentar, sedang memproses video...")
+
+            cap = cv2.VideoCapture(tfile.name)
+            output_frames = []
+
+            while cap.isOpened():
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                results = model.predict(frame, conf=0.4, iou=0.5)
+                annotated_frame = results[0].plot()
+                output_frames.append(annotated_frame)
             
-            if detected_labels:
-                st.success(f"Karakter terdeteksi: {', '.join(detected_labels)}")
-            else:
-                st.warning("Tidak ada karakter yang terdeteksi di gambar ini.")
-            
-            os.remove(tmp_path)
-        else:
-            st.error("Model tidak berhasil dimuat. Periksa kembali file .pt kamu.")
+            cap.release()
+            st.success("✅ Deteksi selesai!")
+            st.image(output_frames, caption="Hasil Frame Deteksi", use_container_width=True)
+
 else:
-    st.info("Silakan unggah gambar terlebih dahulu untuk memulai deteksi.")
+    st.warning("Model belum dimuat, periksa nama file dan path model di folder 'model/'.")
