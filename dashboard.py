@@ -12,72 +12,114 @@ st.set_page_config(
 # ------------------- CUSTOM NEON GRADIENT CSS -------------------
 st.markdown("""
 <style>
-/* Gradient Neon untuk body, sidebar, container utama */
-body, .main, .block-container, .css-1d391kg {
-    background: linear-gradient(135deg, #00f0ff, #fff700) !important;
-    color: #fff !important;
-    font-weight: bold;
-}
-
-/* Sidebar text & background */
-.css-1d391kg {
-    background: linear-gradient(180deg, #00f0ff, #fff700) !important;
-}
-
-/* Tombol radio sidebar jadi lebih neon */
-div[data-baseweb="radio"] label {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    padding: 10px 15px;
-    border-radius: 12px;
-    margin-bottom: 5px;
-    display: block;
-    text-align: center;
-    font-weight: bold;
-    border: 2px solid #00f0ff;
+/* Body & aplikasi */
+body, .stApp {
+    background: radial-gradient(circle at top left, #0a1a0a, #0d2610, #112f12);  /* gelap hijau untuk kontras neon */
+    color: #e0ffe0;
+    font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
 }
-div[data-baseweb="radio"] label:hover {
-    background: rgba(255, 255, 255, 0.3);
-    color: #001f3f;
-    border-color: #fff700;
-}
 
-/* Uploader container */
-div.stFileUpload>div>div {
-    background: rgba(255,255,255,0.2) !important;
-    color: #fff !important;
-    border-radius: 12px;
-    padding: 10px;
-    font-weight: bold;
-    border: 1px solid #00f0ff;
+/* Heading */
+h1, h2, h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
 }
-
-/* Tombol "Browse files" */
-div.stFileUpload button {
-    background: linear-gradient(45deg, #00f0ff, #fff700) !important;
-    color: #001f3f !important;
-    border-radius: 12px;
-    font-weight: bold;
-    border: 2px solid #fff;
-    transition: all 0.3s ease;
-}
-div.stFileUpload button:hover {
-    background: linear-gradient(45deg, #fff700, #00f0ff) !important;
-    color: #001f3f !important;
-}
-
-/* Placeholder teks */
-div.stFileUpload div[data-testid="stFileUploadDropzone"] {
-    color: #fff !important;
-}
-
-/* Neon heading */
 h1 {
-    text-shadow: 0 0 5px #00f0ff, 0 0 10px #fff700, 0 0 20px #00f0ff;
+    font-size: 3rem;
+    background: linear-gradient(90deg, #00ff4c, #ffff00);  /* neon hijau ke kuning */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+/* Tombol */
+.stButton>button {
+    background: linear-gradient(90deg, #00ff4c, #ffff00);
+    color: #001f00;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    padding: 0.7em 2em;
+    margin: 5px;
+    transition: all 0.3s ease;
+}
+.stButton>button:hover {
+    box-shadow: 0 0 25px #00ff4c80, 0 0 50px #ffff4080;
+    transform: translateY(-2px);
+}
+
+/* Card hasil deteksi */
+.result-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    transition: all 0.4s ease-in-out;
+}
+.result-card:hover {
+    box-shadow: 0 0 25px #00ff4c80, 0 0 50px #ffff4060;
+    transform: translateY(-5px);
+}
+
+/* Info box */
+.info-box {
+    background: linear-gradient(90deg, #0f1f0f, #1b2a12);
+    border-radius: 12px;
+    padding: 14px 20px;
+    color: #bdfebd;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Neon text */
+.neon-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #00ff4c;
+    text-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00, 0 0 20px #00ff4c;
+}
+
+/* Subtext */
+.subtext {
+    font-size: 1rem;
+    color: #bdfebd;
+    margin-bottom: 20px;
+}
+
+/* Neon title animation */
+.neon-title {
+    animation: glow 1.8s infinite alternate;
+    font-weight: 800;
+    font-size: 2.2rem;
+}
+@keyframes glow {
+    0% { text-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00; }
+    50% { text-shadow: 0 0 15px #00ff4c, 0 0 25px #ffff00; }
+    100% { text-shadow: 0 0 5px #00ff4c, 0 0 10px #ffff00; }
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(90deg, #0d120a, #1e2410);
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-top: 50px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #bdfebd;
+    box-shadow: 0 0 20px #00ff4c40;
+}
+
+/* Responsive */
+@media only screen and (max-width: 1024px) {
+    .stColumns { flex-direction: column !important; }
+    .stButton>button { margin-bottom: 15px; width: 100% !important; }
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # ------------------- HEADER -------------------
 st.markdown("<h1 style='text-align:center;'>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
