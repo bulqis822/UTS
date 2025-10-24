@@ -17,8 +17,8 @@ st.markdown("""
 <style>
 /* Sidebar */
 [data-testid="stSidebar"] {
-    background-color: #001f3f;
-    color: #ff851b;
+    background-color: #001f3f;  /* biru dongker */
+    color: #ff851b;             /* orange */
     font-family: 'Verdana', sans-serif;
 }
 
@@ -70,6 +70,28 @@ h2, h3, h4 {
     margin-bottom: 10px;
     box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
 }
+
+/* File uploader */
+div.stFileUpload > div > div > div {
+    background-color: #FFD580 !important;  /* orange muda */
+    color: #001f3f !important;            /* teks biru dongker */
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: bold;
+}
+
+/* Uploader button */
+div.stFileUpload button {
+    background-color: #ff851b !important; /* oranye terang */
+    color: white !important;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+div.stFileUpload button:hover {
+    background-color: #ffaa33 !important;
+    color: #001f3f !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -89,7 +111,7 @@ def load_model():
 
 # ------------------- DETEKSI -------------------
 if menu == "🧠 Deteksi":
-    st.subheader("🚀 Unggah Gambar untuk Deteksi & klasifikasi Karakter")
+    st.subheader("🚀 Unggah Gambar untuk Deteksi & Klasifikasi Karakter")
 
     uploaded_file = st.file_uploader("Pilih gambar (JPG, JPEG, PNG)", type=["jpg", "jpeg", "png"])
 
