@@ -12,7 +12,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ------------------- CUSTOM CSS -------------------
 st.markdown("""
 <style>
 /* Sidebar */
@@ -73,8 +72,8 @@ h2, h3, h4 {
 
 /* File uploader */
 div.stFileUpload > div > div > div {
-    background-color: #FFD580 !important;  /* orange muda */
-    color: #001f3f !important;            /* teks biru dongker */
+    background-color: white !important;  /* background putih */
+    color: #001f3f !important;           /* teks gelap */
     border-radius: 8px;
     padding: 10px;
     font-weight: bold;
@@ -94,6 +93,7 @@ div.stFileUpload button:hover {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # ------------------- HEADER -------------------
 st.markdown("<h1>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
