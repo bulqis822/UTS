@@ -5,60 +5,92 @@ import numpy as np
 import tempfile
 import os
 
-st.set_page_config(page_title="YOLO Object Detection", layout="wide")
+# ------------------- CONFIG -------------------
+st.set_page_config(page_title="Deteksi Karakter Tom & Jerry", layout="wide")
 
-# --- TITLE ---
-st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🪶 YOLO Object Detection Dashboard</h1>", unsafe_allow_html=True)
+# ------------------- HEADER -------------------
+st.markdown("<h1 style='text-align:center; color:#FF7043;'>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;'>Sistem deteksi otomatis karakter berdasarkan model YOLO yang kamu latih sendiri.</p>", unsafe_allow_html=True)
 
-# --- LOAD MODEL (cached biar tidak reload terus) ---
+# ------------------- SIDEBAR NAVIGATION -------------------
+menu = st.sidebar.radio("Navigasi", ["🧠 Deteksi", "ℹ️ Tentang"])
+
+# ------------------- LOAD MODEL -------------------
 @st.cache_resource
 def load_model():
-    model_path = "model/Bulqis_Laporan_4.pt"  # pastikan path benar
+    model_path = "model/Bulqis_Laporan_4.pt"
     model = YOLO(model_path)
     return model
 
-try:
-    model = load_model()
-except Exception as e:
-    st.error(f"Gagal memuat model: {e}")
-    st.stop()
+# ------------------- DETEKSI -------------------
+if menu == "🧠 Deteksi":
+    st.subheader("🚀 Unggah Gambar untuk Deteksi Karakter")
 
-# --- PILIH INPUT ---
-st.sidebar.title("⚙️ Pengaturan")
-mode = st.sidebar.radio("Pilih Mode:", ["Gambar", "Video"])
+    uploaded_file = st.file_uploader("Pilih gambar (JPG, JPEG, PNG)", type=["jpg", "jpeg", "png"])
 
-if mode == "Gambar":
-    uploaded_file = st.file_uploader("Unggah Gambar", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file).convert("RGB")
+        image = image.resize((640, 480))  # resize agar lebih ringan
 
-    if uploaded_file:
-        img = Image.open(uploaded_file).convert("RGB")
+        col1, col2 = st.columns(2)
 
-        # kompres ukuran biar ringan
-        img = img.resize((640, 480))
+        with col1:
+            st.image(image, caption="Gambar Asli", use_container_width=True)
 
-        st.image(img, caption="Gambar Asli", use_container_width=True)
+        with col2:
+            with st.spinner("Model sedang memproses gambar..."):
+                try:
+                    model = load_model()
+                    results = model.predict(image, conf=0.5, imgsz=640, verbose=False)
+                    result_image = results[0].plot()  # hasil deteksi ke array numpy
+                    st.image(result_image, caption="Hasil Deteksi", use_container_width=True)
 
-        with st.spinner("Mendeteksi objek..."):
-            results = model.predict(img, conf=0.5, imgsz=640, verbose=False)
-            result_img = results[0].plot()  # hasil deteksi jadi numpy array
-            st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
+                    # tampilkan label hasil deteksi
+                    detected_labels = set()
+                    for box in results[0].boxes:
+                        cls = int(box.cls)
+                        label = model.names[cls]
+                        detected_labels.add(label)
 
-elif mode == "Video":
-    uploaded_video = st.file_uploader("Unggah Video", type=["mp4", "mov", "avi"])
-    if uploaded_video:
-        tfile = tempfile.NamedTemporaryFile(delete=False)
-        tfile.write(uploaded_video.read())
+                    if detected_labels:
+                        st.success(f"Karakter terdeteksi: {', '.join(detected_labels)}")
+                    else:
+                        st.warning("Tidak ada karakter yang terdeteksi.")
 
-        st.video(tfile.name)
+                except Exception as e:
+                    st.error(f"Gagal menjalankan deteksi: {e}")
+    else:
+        st.info("📂 Silakan unggah gambar terlebih dahulu untuk mendeteksi karakter.")
 
-        with st.spinner("Mendeteksi objek... (harap tunggu, CPU mode)"):
-            results = model.predict(source=tfile.name, conf=0.5, stream=False, imgsz=640, verbose=False)
-            
-            output_path = os.path.join("temp", "hasil.mp4")
-            os.makedirs("temp", exist_ok=True)
-            model.export(format="onnx", simplify=True)  # biar next run lebih cepat
+# ------------------- TENTANG -------------------
+elif menu == "ℹ️ Tentang":
+    st.subheader("ℹ️ Tentang Aplikasi Ini")
 
-            st.success("✅ Deteksi selesai (tampilkan video hasilnya belum diaktifkan untuk kecepatan).")
+    st.markdown("""
+    Aplikasi ini dibuat untuk **mendeteksi karakter Tom dan Jerry** secara otomatis menggunakan model **YOLOv8**.
+    
+    ### 🧩 Cara Menggunakan:
+    1. Masuk ke menu **Deteksi** di sidebar.
+    2. Unggah gambar yang berisi karakter Tom atau Jerry.
+    3. Tunggu sebentar hingga model selesai memproses.
+    4. Hasil deteksi akan muncul di samping, lengkap dengan nama karakter.
 
-st.markdown("---")
-st.caption("🚀 Dibuat dengan YOLOv8 + Streamlit | Optimized by ChatGPT GPT-5")
+    ### ⚙️ Teknologi yang Digunakan:
+    - **Streamlit** → untuk tampilan web interaktif.  
+    - **Ultralytics YOLOv8** → untuk model deteksi objek.  
+    - **Pillow (PIL)** → untuk membaca dan memproses gambar.
+
+    ### 📁 Struktur Folder:
+    ```
+    📂 proyek/
+     ┣ 📜 dashboard.py
+     ┣ 📂 model/
+     ┃ ┗ 📜 Bulqis_Laporan_4.pt
+     ┣ 📜 requirements.txt
+    ```
+
+    ### 👩‍💻 Pembuat:
+    Dibuat oleh **Bulqis** — mahasiswa Statistika, Universitas Syiah Kuala.  
+    """)
+    st.markdown("---")
+    st.caption("🚀 Dibangun dengan cinta menggunakan Streamlit & YOLOv8 ❤️")
