@@ -1,7 +1,6 @@
 import streamlit as st
 from ultralytics import YOLO
 from PIL import Image
-import numpy as np
 
 # ------------------- CONFIG -------------------
 st.set_page_config(
@@ -10,72 +9,81 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ------------------- CUSTOM CSS -------------------
+# ------------------- CUSTOM NEON GRADIENT CSS -------------------
 st.markdown("""
 <style>
-/* Body dan background utama */
-body, .main, .block-container {
-    background-color: #fefefe !important;
-    color: #001f3f !important;
+/* Gradient Neon untuk body, sidebar, container utama */
+body, .main, .block-container, .css-1d391kg {
+    background: linear-gradient(135deg, #00f0ff, #fff700) !important;
+    color: #fff !important;
+    font-weight: bold;
 }
 
-/* Sidebar */
-.css-1d391kg {  /* container sidebar */
-    background-color: #001f3f !important;
-    color: white !important;
+/* Sidebar text & background */
+.css-1d391kg {
+    background: linear-gradient(180deg, #00f0ff, #fff700) !important;
 }
 
-/* Tombol radio sidebar lebih menarik */
+/* Tombol radio sidebar jadi lebih neon */
 div[data-baseweb="radio"] label {
-    background-color: #ff851b;
-    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
     padding: 10px 15px;
-    border-radius: 10px;
+    border-radius: 12px;
     margin-bottom: 5px;
     display: block;
     text-align: center;
     font-weight: bold;
+    border: 2px solid #00f0ff;
+    transition: all 0.3s ease;
 }
 div[data-baseweb="radio"] label:hover {
-    background-color: #ffaa33;
+    background: rgba(255, 255, 255, 0.3);
     color: #001f3f;
+    border-color: #fff700;
 }
 
 /* Uploader container */
 div.stFileUpload>div>div {
-    background-color: white !important;
-    color: #001f3f !important;
-    border-radius: 8px;
+    background: rgba(255,255,255,0.2) !important;
+    color: #fff !important;
+    border-radius: 12px;
     padding: 10px;
     font-weight: bold;
+    border: 1px solid #00f0ff;
 }
 
 /* Tombol "Browse files" */
 div.stFileUpload button {
-    background-color: #ff851b !important;
-    color: white !important;
-    border-radius: 8px;
+    background: linear-gradient(45deg, #00f0ff, #fff700) !important;
+    color: #001f3f !important;
+    border-radius: 12px;
     font-weight: bold;
+    border: 2px solid #fff;
+    transition: all 0.3s ease;
 }
-
 div.stFileUpload button:hover {
-    background-color: #ffaa33 !important;
+    background: linear-gradient(45deg, #fff700, #00f0ff) !important;
     color: #001f3f !important;
 }
 
 /* Placeholder teks */
 div.stFileUpload div[data-testid="stFileUploadDropzone"] {
-    color: #001f3f !important;
+    color: #fff !important;
+}
+
+/* Neon heading */
+h1 {
+    text-shadow: 0 0 5px #00f0ff, 0 0 10px #fff700, 0 0 20px #00f0ff;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ------------------- HEADER -------------------
-st.markdown("<h1 style='text-align:center; color:#ff851b;'>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; font-size:18px; color:#001f3f;'>Sistem deteksi otomatis karakter berdasarkan model YOLO yang kamu latih sendiri.</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'>🎬 Deteksi Karakter Tom & Jerry</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; font-size:18px;'>Sistem deteksi otomatis karakter berbasis YOLOv8.</p>", unsafe_allow_html=True)
 
 # ------------------- SIDEBAR NAVIGATION -------------------
-# Sidebar custom order: Tentang dulu
 menu = st.sidebar.radio("", ["ℹ️ Tentang", "🧠 Deteksi"])
 
 # ------------------- LOAD MODEL -------------------
