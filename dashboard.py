@@ -24,7 +24,7 @@ def load_model():
 
 # ------------------- DETEKSI -------------------
 if menu == "🧠 Deteksi":
-    st.subheader("🚀 Unggah Gambar untuk Deteksi Karakter")
+    st.subheader("🚀 Unggah Gambar untuk Deteksi & klasifikasi Karakter")
 
     uploaded_file = st.file_uploader("Pilih gambar (JPG, JPEG, PNG)", type=["jpg", "jpeg", "png"])
 
@@ -75,9 +75,8 @@ elif menu == "ℹ️ Tentang":
     3. Tunggu sebentar hingga model selesai memproses.
     4. Hasil deteksi akan muncul di samping, lengkap dengan nama karakter.
 
-
+    st.markdown("---")
     ### 👩‍💻 Pembuat:
     Dibuat oleh **Bulqis** — mahasiswa Statistika, Universitas Syiah Kuala.  
     """)
-    st.markdown("---")
-    st.caption("🚀 Dibangun dengan cinta menggunakan Streamlit & YOLOv8 ❤️")
+    
