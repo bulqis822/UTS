@@ -156,13 +156,18 @@ if menu == "ℹ️ Tentang":
     4. Hasil deteksi akan muncul di samping, lengkap dengan nama karakter.
     """)
     st.markdown("---")
+
+    # Tambahkan beberapa baris kosong agar "Pembuat" turun kebawah
+    st.markdown("<br><br><br>", unsafe_allow_html=True)  
+
     st.markdown("""
     ### 👩‍💻 Pembuat:
     Dibuat oleh **Putri Bulqis**  
-    Mahasiswa Statistika angkatan 2022
-    NPM 2208108010053
-    Universitas Syiah Kuala.  
+    Mahasiswa Statistika angkatan 2022  
+    NPM 2208108010053  
+    Universitas Syiah Kuala.
     """)
+
 
 # ------------------- DETEKSI -------------------
 elif menu == "🧠 Deteksi":
