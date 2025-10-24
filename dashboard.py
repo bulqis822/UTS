@@ -158,7 +158,10 @@ if menu == "ℹ️ Tentang":
     st.markdown("---")
     st.markdown("""
     ### 👩‍💻 Pembuat:
-    Dibuat oleh **Bulqis** — mahasiswa Statistika, Universitas Syiah Kuala.  
+    Dibuat oleh **Putri Bulqis**  
+    Mahasiswa Statistika angkatan 2022
+    NPM 2208108010053
+    Universitas Syiah Kuala.  
     """)
 
 # ------------------- DETEKSI -------------------
